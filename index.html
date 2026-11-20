@@ -15,9 +15,8 @@
       --accent: #f5b700;
       --accent-2: #38bdf8;
       --ok: #22c55e;
-      --flap-bg: #1a1f29;
-      --flap-bg-top: #202734;
-      --flap-bg-bot: #161b24;
+      --flap-top-bg: #222938;
+      --flap-bot-bg: #171c26;
       --flap-ink: #f8fafc;
     }
 
@@ -36,7 +35,7 @@
     }
 
     .app {
-      max-width: 920px;
+      max-width: 980px;
       margin: 0 auto;
       padding: 16px 14px 48px;
       display: flex;
@@ -154,96 +153,100 @@
       box-shadow: 0 0 8px var(--ok);
     }
 
-    /* ★ iPhone Safari で高さが 0 や細線にならないよう明示的に確保 */
+    /* フラップ表示エリア：大きめ＆ダブり防止 */
     .flap-grid {
       display: grid;
       grid-template-columns: repeat(8, minmax(0, 1fr));
-      gap: 6px;
+      gap: 8px;
       width: 100%;
-      min-height: 68px;
       background: #090b0f;
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 14px;
-      padding: 10px 8px;
+      padding: 12px 10px;
     }
 
     .unit {
+      --u-h: 112px;
+      --f-size: 56px;
       position: relative;
       width: 100%;
-      height: 76px;
-      min-height: 76px;
-      flex-shrink: 0;
-      border-radius: 8px;
+      height: var(--u-h);
+      min-height: var(--u-h);
+      border-radius: 10px;
       background: #10141c;
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.16);
       overflow: hidden;
       cursor: pointer;
-      perspective: 420px;
+      perspective: 520px;
       user-select: none;
     }
 
-    .flap-half {
+    /* 上半分の窓 */
+    .flap-top {
       position: absolute;
       left: 0;
       right: 0;
+      top: 0;
       height: 50%;
       overflow: hidden;
-      display: flex;
-      justify-content: center;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
-
-    .flap-top {
-      top: 0;
-      align-items: flex-end;
-      background: var(--flap-bg-top);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.75);
-      transform-origin: 50% 100%;
+      background: var(--flap-top-bg);
       z-index: 2;
     }
 
+    /* 下半分の窓 */
     .flap-bottom {
+      position: absolute;
+      left: 0;
+      right: 0;
       bottom: 0;
-      align-items: flex-start;
-      background: var(--flap-bg-bot);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      transform-origin: 50% 0%;
+      height: 50%;
+      overflow: hidden;
+      background: var(--flap-bot-bg);
       z-index: 1;
     }
 
+    /* めくれる上フラップ（1枚だけアニメーション） */
     .flap-flipper {
+      position: absolute;
+      left: 0;
+      right: 0;
       top: 0;
-      align-items: flex-end;
-      background: linear-gradient(180deg, #273041 0%, #1b212d 100%);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.85);
+      height: 50%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #2b3446 0%, #1d2432 100%);
       transform-origin: 50% 100%;
       z-index: 4;
       opacity: 0;
       pointer-events: none;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
 
+    /* 文字をユニット全体高さで配置し、上下の窓で切り抜く */
     .glyph {
-      font-size: 38px;
-      line-height: 76px;
-      height: 76px;
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: var(--u-h);
+      line-height: var(--u-h);
+      font-size: var(--f-size);
       font-weight: 800;
       color: var(--flap-ink);
       text-align: center;
-      width: 100%;
+    }
+
+    .flap-top .glyph,
+    .flap-flipper .glyph {
+      top: 0;
     }
 
     .flap-bottom .glyph {
-      transform: translateY(-50%);
-    }
-
-    .flap-flipper .glyph {
-      transform: translateY(0);
+      top: calc(var(--u-h) * -0.5);
     }
 
     .unit.is-flipping .flap-flipper {
       opacity: 1;
-      animation: flipDown 0.16s ease-in forwards;
+      animation: flipDown 0.17s ease-in forwards;
     }
 
     @keyframes flipDown {
@@ -252,19 +255,21 @@
         filter: brightness(1);
       }
       100% {
-        transform: rotateX(-92deg);
-        filter: brightness(0.68);
+        transform: rotateX(-90deg);
+        filter: brightness(0.65);
       }
     }
 
+    /* 中央のヒンジ・分割線 */
     .center-bar {
       position: absolute;
       left: 0;
       right: 0;
       top: 50%;
-      height: 2px;
-      margin-top: -1px;
-      background: rgba(0, 0, 0, 0.9);
+      height: 3px;
+      margin-top: -1.5px;
+      background: #07090d;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
       z-index: 6;
       pointer-events: none;
     }
@@ -394,20 +399,15 @@
       cursor: pointer;
     }
 
-    @media (max-width: 520px) {
+    @media (max-width: 640px) {
       .flap-grid {
         gap: 4px;
-        padding: 8px 6px;
+        padding: 10px 6px;
       }
       .unit {
-        height: 54px;
-        min-height: 54px;
-        border-radius: 6px;
-      }
-      .glyph {
-        font-size: 26px;
-        line-height: 54px;
-        height: 54px;
+        --u-h: 68px;
+        --f-size: 32px;
+        border-radius: 7px;
       }
     }
   </style>
@@ -565,9 +565,9 @@
       const unit = document.createElement("div");
       unit.className = "unit";
       unit.innerHTML = `
-        <div class="flap-half flap-top"><span class="glyph"> </span></div>
-        <div class="flap-half flap-bottom"><span class="glyph"> </span></div>
-        <div class="flap-half flap-flipper"><span class="glyph"> </span></div>
+        <div class="flap-top"><span class="glyph"> </span></div>
+        <div class="flap-bottom"><span class="glyph"> </span></div>
+        <div class="flap-flipper"><span class="glyph"> </span></div>
         <div class="center-bar"></div>
       `;
       unit.addEventListener("click", () => {
@@ -608,7 +608,7 @@
         u.botGlyph.textContent = nextChar;
         currentChars[index] = nextChar;
         u.el.classList.remove("is-flipping");
-      }, 155);
+      }, 165);
     }
 
     function clearTimers() {
